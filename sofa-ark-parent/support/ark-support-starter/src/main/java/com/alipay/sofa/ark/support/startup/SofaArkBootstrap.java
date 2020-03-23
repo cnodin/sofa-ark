@@ -46,10 +46,13 @@ public class SofaArkBootstrap {
                 entryMethod = new EntryMethod(Thread.currentThread());
                 IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(
                     entryMethod.getDeclaringClassName());
+                //启动的Runner方法，MAIN_ENTRY_NAME="remain"
                 LaunchRunner launchRunner = new LaunchRunner(SofaArkBootstrap.class.getName(),
                     MAIN_ENTRY_NAME, args);
+
                 Thread launchThread = new Thread(threadGroup, launchRunner,
                     entryMethod.getMethodName());
+                //单线程启动sofaark，会调用SofaArkBootstrap.java中的remain方法
                 launchThread.start();
                 LaunchRunner.join(threadGroup);
                 threadGroup.rethrowUncaughtException();
@@ -70,9 +73,13 @@ public class SofaArkBootstrap {
         }
     }
 
+    //容器的启动逻辑入口
     private static void remain(String[] args) throws Exception {// NOPMD
         AssertUtils.assertNotNull(entryMethod, "No Entry Method Found.");
+        //系统环境变量目录
         URL[] urls = getURLClassPath();
+        //这里entryMethod为业务包的入口main方法，即@SpringBootApplication标记类的main方法
+        //在ClassPathArchive类中加载了classpath中的jar包, 在launch中启动sofaark
         new ClasspathLauncher(new ClassPathArchive(entryMethod.getDeclaringClassName(),
             entryMethod.getMethodName(), urls)).launch(args, getClasspath(urls),
             entryMethod.getMethod());

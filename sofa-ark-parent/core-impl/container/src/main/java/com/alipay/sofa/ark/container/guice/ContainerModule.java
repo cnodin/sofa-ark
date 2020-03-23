@@ -56,6 +56,7 @@ public class ContainerModule extends AbstractArkGuiceModule {
 
     @Override
     protected void configure() {
+        //类似spring的bean注入，会在ArkServiceContainer.java中的Guice.createInjector(findServiceModules())中被调用
         binder().bind(Pipeline.class).to(StandardPipeline.class);
 
         Multibinder<ArkService> arkServiceMultibinder = Multibinder.newSetBinder(binder(),

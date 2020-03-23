@@ -85,6 +85,7 @@ public class ArkContainer {
         }
 
         try {
+            //准备启动命令类LaunchCommand，设置入口类和入口方法，以及classpath等。
             LaunchCommand launchCommand = LaunchCommand.parse(args);
             if (launchCommand.isExecutedByCommandLine()) {
                 ExecutableArkBizJar executableArchive;
@@ -96,6 +97,7 @@ public class ArkContainer {
                     executableArchive = new ExecutableArkBizJar(new JarFileArchive(rootFile,
                         launchCommand.getExecutableArkBizJar()));
                 }
+                //启动Ark容器
                 return new ArkContainer(executableArchive, launchCommand).start();
             } else {
                 ClassPathArchive classPathArchive = new ClassPathArchive(
@@ -128,16 +130,22 @@ public class ArkContainer {
      * @since 0.1.0
      */
     public Object start() throws ArkRuntimeException {
+        /*start方法是启动Sofa-Ark核心逻辑*/
+
         AssertUtils.assertNotNull(arkServiceContainer, "arkServiceContainer is null !");
         if (started.compareAndSet(false, true)) {
+            //注册一个shutdown hook，清理资源
             Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                 @Override
                 public void run() {
                     stop();
                 }
             }));
+            //从bootstrap.properties或者bootstrap-{profile}.properties中读取配置内容到ArkConfigs.CFG中
             prepareArkConfig();
+            //初始化Log
             reInitializeArkLogger();
+            //start()后，所有需要的服务已经注入成功
             arkServiceContainer.start();
             Pipeline pipeline = arkServiceContainer.getService(Pipeline.class);
             pipeline.process(pipelineContext);

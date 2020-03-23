@@ -42,8 +42,12 @@ public class MainMethodRunner {
     }
 
     public Object run() throws Exception {
+        //arkContainer启动，这里的mainClass是ContainerClassLoader
+        //biz module启动时，这里的mainClass是BizClassLoader
         Class<?> mainClass = Thread.currentThread().getContextClassLoader()
             .loadClass(this.mainClassName);
+        //arkContainer启动, 执行com.alipay.sofa.ark.container.ArkContainer.main
+        //biz module启动是，执行模块里面的main方法
         Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
         return mainMethod.invoke(null, new Object[] { this.args });
     }

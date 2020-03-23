@@ -225,6 +225,7 @@ public class BizModel implements Biz {
             eventAdminService.sendEvent(new BeforeBizStartupEvent(this));
             resetProperties();
             MainMethodRunner mainMethodRunner = new MainMethodRunner(mainClass, args);
+            //启动业务组件的入口方法
             mainMethodRunner.run();
             // this can trigger health checker handler
             eventAdminService.sendEvent(new AfterBizStartupEvent(this));

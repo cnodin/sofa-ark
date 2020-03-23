@@ -56,6 +56,8 @@ public abstract class AbstractLauncher {
      */
     public Object launch(String[] args, String classpath, Method method) throws Exception {
         JarFile.registerUrlProtocolHandler();
+
+        //这里创建ContainerClassLoader
         ClassLoader classLoader = createContainerClassLoader(getContainerArchive());
         List<String> attachArgs = new ArrayList<>();
         attachArgs.add(String.format("%s%s=%s", CommandArgument.ARK_CONTAINER_ARGUMENTS_MARK,
@@ -91,11 +93,14 @@ public abstract class AbstractLauncher {
 
     protected Object launch(String[] args, String mainClass, ClassLoader classLoader)
                                                                                      throws Exception {
+        //将旧ClassLoader先保存下
         ClassLoader old = Thread.currentThread().getContextClassLoader();
         try {
+            //使用ContainerClassLoader
             Thread.currentThread().setContextClassLoader(classLoader);
             return createMainMethodRunner(mainClass, args).run();
         } finally {
+            //还原旧ClassLoader
             Thread.currentThread().setContextClassLoader(old);
         }
     }

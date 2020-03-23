@@ -52,6 +52,7 @@ public class ArkApplicationStartListener implements ApplicationListener<SpringAp
 
     public void startUpArk(SpringApplicationEvent event) {
         if (LAUNCH_CLASSLOADER_NAME.equals(this.getClass().getClassLoader().getClass().getName())) {
+            //启动sofa-ark
             SofaArkBootstrap.launch(event.getArgs());
         }
     }
